@@ -1,0 +1,202 @@
+lecture 2
+
+theory of cameras 
+    pinhole camera
+        aka camera obscura
+        the simplest imaging device which captures the geometry of perspective projection
+        how does it work
+            rays of light enter the camera through an infinitesimally small aperture(?)
+            the intersection of light rays with the image plane form the image of the object
+        leonardo davinci (around year 1500) wrote about the pinhole camera that you can display a reversed image through a pinhole 
+    
+perspective projection 
+    mapping from 3d onto 2d 
+        "Perspective projection or perspective transformation is a linear projection where three dimensional objects are projected on a picture plane"
+        as a result, distant objects appear smaller than nearer objects
+    we look at the theory of how the (pinhole) camera works
+    we find the point on the image plane that corresponds to a particular point in the scene by following the line that passes through the scene point and the center of projection 
+        straight line goes like this:
+            image point on image plane ← pinhole at the center of projection ← scene point
+    definitions
+        focal length 
+            the orthogonal(!) distance between the optical center and the image plane 
+                the orthogonal distance is along the optical axis (z)
+        coordinate notations 
+            image coordinates p=(x,y,f), world coordinates P=(X,Y,Z)
+        focal plane
+            the plane in the real world which is represented without blur on the image plane 
+        focal depth
+            the range of distances with acceptable blurring 
+
+lenses 
+    gather light from a larger opening 
+    problem: only light rays from the points of the focal plane intersect the same point on the image plane 
+        this leads to blurring in front or behind the focal plane 
+    
+    lenses try to solve this problem(?)
+        smaller aperture → less blur 
+        pinhole → no blur 
+
+    types of lenses
+        telescopic lense we flatten the image
+            used in movie to give sense of objects being closer, lose sense of depth and distance 
+            if you move further away while zooming in, you increase focal length, and parallel lines in 3d become more parallel in 2d too. We lose sense of perspective. The world appears flat.
+        fish-eye lens 
+            field of view is wide, but results in radial distortion 
+                when straight lines in the world are no longer straight in the image 
+
+imaging geometry
+    perspective projection
+        general camera model
+        all visual rays converge to a common point 
+        imagine that we're photographing a house from a short distance away, then all rays unite in the focal point from big angles 
+    orthographic projection 
+        approximation: distant objects, center of view
+        all visual rays are perpendicular to the image plane 
+        imagine that we're photographing a house that's really far away, then all rays are parallel to the ground
+    scaled orthography 
+        we add a constant Z0 that represents the depth 
+
+perspective transformation 
+    rotation - from world coo to camera coo
+    translation - from world coo to camera coo
+    perspective projection - (from 3d to 2d) from camera coo to image coordinates   (?)
+
+homogeneous coordinates 
+    these are special coordinates we use in computer vision 
+    we model a r3 world-domain point (X,Y,Z) → (kX,kY,kZ,k) where k!=0, in r2 image domain by (cx,cy,c) where c!=0.
+    using homogeneous coordinates, we can represent "points in infinity" with k=0 → which is the intersection of parallel lines 
+    equivalence 
+        two points are considered equivalent if only k is different 
+        in 2d this means that all points along a ray (cx,cy,c) in homogeneous coordinates are equivalent 
+
+    we can use homogeneous coordinates to calculate the vanishing point Pt 
+    parallel lines P0+tD and Pi+tD intersect at Pinfinite
+
+    image coordinates are obtained through a formula on slide 16 
+
+camera calibration 
+    cameras are not perfect 
+    due to imperfect placement of the camera chip relative to the lense system, there is always a small relative rotation and shift of the center position
+    
+    intrinsic and extrinsic camera parameters
+        intrinsic camera parameters 
+            cameras have five known vairables called the camera's intrinsic parameters 
+                focal length (fu, fv)
+                skew (gamma)
+                principal point (u0,v0) often close to the image center 
+            these variables build up the camera matrix K 
+            the process of finding the camera matrix K for an unknown camera is called camera callbraion 
+            
+        extrinsic camera parameters 
+            the extrinsic parameters consist of a rotation, R, and a translation, t
+        
+    perks of camera callibration
+        when the camera is calibrated, you can map a plane from one image to another, as if the camera were placed elsewhere
+            you can take a skewed picture of a doormat and portray it from above
+     
+image stitching 
+    combining images into larger mosaic (panorama) of higher resolution
+
+image transformations with DoF (NOTE: this is 2D)
+    translation
+        (translation): 2 DoF 
+        we move a square in 2d, so x- and y coordinate control 
+    euclidean 
+        (rotation, translation): 3 DoF 
+        we move and also rotate the square
+    similatiry 
+        (rotation, translation, scaling): 4 DoF 
+        we also scale the square 
+        image warp is called "aspect" → the image is scaled 
+    affine 
+        (rotation, translation, scaling, shear): 6 DoF
+        shear = A transformation in which all points along a given line L remain fixed while other points are shifted parallel to L by a distance proportional to their perpendicular distance from L
+            tilting a rectangle into a parallelogram 
+            requiring 2 parameters, the line L and the distance to tilt
+    projective  (perspective?)
+        (rotation, translation, scaling, shear, foreshortening): 8 DoF
+        foreshortening = making a square into a parallel trapezoids (parallelltrapets)
+            requiring 2 parameters, line L and amount to tilt
+            like if we're taking a picture on a wall alongside the wall, we experience one long and one short side 
+    cylindrical
+        image warp is called cylindrical → result of thick lense  
+
+different projection models (NOTE: this is 3D)
+    they are each an approcimation that assume a pin-hole camera
+    perspective
+        11 DoF (although it looks like there's 12 on page 30)
+        M = (3 4 matrix, full)
+        under normal condition
+    affine 
+        8 DoF 
+        M = (3 4 matrix, bottom row is 0001)
+        when the perspective is too weak
+    scaled orthographic
+        6 DoF 
+        M = (3 4 matrix, bottom line is 000Z0, right col is dX dY Z0)
+        when very far away 
+
+distortion
+    thick lense → straight lines get bent 
+    model to straighten them:
+        equation system on page 31 
+
+image warping
+    warping means distorting the image 
+    we want to get a new image g(u,v) from our original image f(x,y)
+    there are two ways to compute g(u,v) from f(x,y)
+        nearest neighbour look-up 
+            noisy result 
+            (looks pixelated and low resolution)
+        bilinear interpolation 
+            aka. bilinear filtering or bilinear texture mapping
+            (mathematical curve-fitting method)
+            blurry result 
+            (looks smoothened and blurred)
+
+neighbours
+    D4=1
+        a pixel has four neighbours and their distance is D4=1
+    D8=1
+        a pixel has eight neighbours and their distance is D8=1
+
+Jordan curve theorem 
+    continous case 
+    "Each closed curve divides plane into one region inside and one region outside"
+    Note: many region-based methods only store the boundary, not the area inside 
+
+different distance measures 
+    euclidean distance 
+        d = sqrt((x-u)^2+(y-v)^2)
+        slow to calculate
+        actual physical distance to each point from the middle
+            straight distance is 1, diagonal distance is sqrt(2)
+    city block distance d = |x-u|+|y-v|
+        you cannot walk diagonally
+            straight distance is 1, diagonal distance is 2 (you go zig zag in the blocks)
+    chessboard distance d = max(|x-u|,|y-v|)
+        you walk like a king in chess 
+            all 8 neighbours are d=1
+
+CONCEPTS TO GOOGLE FURTHER - random nonsense - might be on the exam!
+    different types of perspective projection (or linear approximation? what is the difference?)
+        affine camera 
+            an affine camera is a linear mathematical model to approximate the perspective projection followed by an ideal pinhole camera.
+            angles are NOT preserved
+            how does it work?
+                an affine camera combines the effects of an affine transformation of 3d space, orthographic projection, and an affine transformation of the image 
+                affine projection is a linear mapping + translation in inhomogeneous coordinates 
+                linear transformation
+                parallel lines in 3d mapped to parallel lines in 2d
+
+        weak perspective projection 
+            weak perspective projection is a linear approximation of the (full) perspective projection. 
+
+        orthographic projection 
+        paraperspective projection
+
+        weak-perspective model
+            the affine camera becomes a weak-perspective camera when the rows of M form a uniformly scaled rotation matrix. 
+            the weak-perspective model is valid when the average variation of the depth of the object (deltaZ) along the line of sight is small compared to the Zaverage and the field of view is small.
+

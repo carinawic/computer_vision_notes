@@ -1,0 +1,122 @@
+lecture 4
+
+fourier transform 
+    how to interpret the fourier transform dots
+        maximum frequency scenario
+            The maximum frequency which can be represented in the spatial domain are one pixel wide stripes => period=2 => ωmax = π
+                period = 2 => frequency = 1/2*(2π) = π
+                period = 4 => frequency = 1/4*(2π) = π/2
+            the dots' distance away from the middle (+- along the x-axis) represent the frequency 
+                when frequency = 1/2 of max, aka. frequency = π/2, we have two points halfway between the center and the edge of the image
+                |   x   x   x   |
+
+    important observations
+        translation only affects phase, not magnitude 
+        a rotation in one domain becomes a rotation in the other domain 
+        fourier transform is a linear operation 
+
+calculating the fourier transform 
+    todo: exercise on page 7
+    Given a simple 4-pixel “image” f (m) = [3, 2, 2, 1], what is its Fourier Transform ˆf(u)?
+
+descrete fourier transform (DFT) properties that are neat
+    separability
+        2D DFT can be implemented as a series of 1D DFTs along each column, followed by 1D DFTs along each row
+    linearity
+        You can add two functions (images) or rescale a function, either before or after computing the Fourier transform. It leads to the same result
+    modulation (aka. shifting the origin)
+        If the original function is multiplied with an exponential like the one below and transformed, it will result in a shift of the origin of the frequency plane to point (u0, v0).
+        F(f(m,n)e^(2πi(mu0/M, mv0/N))) ← these u0 and v0 will tell how much the origin gets shifted = ^f(u-u0, v-v0)
+        centering
+            we can use this property for centering in the fourier domain 
+            we can move the origin of the Fourier transform to the center by multiplying the original function by (-1)^(m+n)
+                explained on page 11
+                basically magic 
+    translation 
+        if the original image is moved, the phase will shift will change in the fourier spectrum, but there is no change in magnitude 
+            this is because the phase knows where all the edges go and we move around the edges whereas the magnitude knows the intensities which don't change 
+    rotation 
+        results in the same rotation in fourier domain 
+    scaling 
+        compression in spatial domain is the same as expansion in fourier domain and vice versa 
+        explained on page 15
+    periodicity and conjugate symmetry
+        it's periodic and symmetric
+            hence we don't need to store the full image because we can exploit the symmetry 
+
+todo: understand page 12
+
+wavelength formula 
+    lambda = 1/sqrt(u^2 + v^2) where (u,v) are frequencies and the periods are 1/u and 1/v
+
+convolution theorem 
+    Multiplication in the spatial domain is same as convolution in the Fourier domain.
+    F(hf) = F(h)∗F(f)
+
+observations 
+    convolving an image with a gaussian function with high variance t makes the image blurry 
+    however, there is a cap when the variance is the same size of the image pizel width 
+        we have reached maximum blur
+
+transfer functions 
+    impulse response
+        A linear, shift invariant system (such as a filter) is completely specified by it’s response to an impulse, which is called the impulse response
+    The transfer function H is the Fourier transform of the impulse response
+        a fourier transformed filter is important to us because we will use it later to multiply it with another fourier transformed function.
+    
+    convolution with a transfer function 
+        when we do convolution with a transfer function, we get a "copy" of the kernel h(x,y) to the location of the impulse
+        examples on slide 22 
+
+    transfer function → fourier transform of transfer function 
+    
+    
+    step (rectangle) → sinc 
+        rect(x/T) → TsincTu 
+        etc.
+
+sampling 
+    Note: Sampling is not a convolution, but a product f (x, y)s(x, y).
+    we use delta functions 
+        Dirac (continuous domain) and Kronecker (discrete) delta functions
+        these are nice due to their sifting proerty    
+            https://www.youtube.com/watch?v=bfOVOnSU34M
+            The sifting property can be used to describe the sampling process of a continuous function f (x, y).
+        for ideal sampling s(x,y) (← this is a sampling function) in the rectangular grid we use a collection of Dirac functions 
+    aliasing and anti-aliasing 
+        sources of error:
+            Intensity quantization (not enough intensity resolution).
+            Spatial aliasing (not enough spatial resolution).
+            Temporal aliasing (not enough temporal resolution).
+        Anti-aliasing: sample at higher rate or prefiltering.
+            Tools: Fourier transform, convolution and the Sampling Theorem
+        aliasing or aliasing artifact = the ugly thing in the picture that we don't want 
+            if we blur (lowpass) before subsampling, then we have only little aliasing in the end
+
+
+signal processing 
+    sampling theorem 
+        how many samples are required to describe the given signal without loss of information? 
+            The sampling theorem essentially says that a signal has to be sampled at least with twice the frequency of the original signal. 
+                Since signals and their respective speed can be easier expressed by frequencies, most explanations of artifacts are based on their representation in the frequency domain.
+                "If the signal is sampled at a rate equal or greater to than twice its highest frequency, the original signal can be completely recovered from it samples (Shannon)."
+
+    band limited
+        A signal is band limited if its highest frequency is bounded
+            this highest frequency is called bandwidth
+        The sine/cosine component of the highest frequency determines the highest “frequency content” of the signal.
+        Nyquist rate
+            The minimum sampling rate for band limited function is called Nyquist rate
+            With an equal or higher sampling rate, the resulting discrete-time sequence is said to be free of the distortion known as aliasing. 
+                if the signal is undersampled, aliasing occurs
+    reconstruction 
+        for reconstruction we need to convolve with a sinc function 
+            it has "infinite support"
+        may be approximated with a gaussian, cubic or tent function 
+
+        Prevent aliasing by:
+            increasing sampling rate, or [infeasible]
+            decreasing highest frequency before sampling. [blurring]
+
+
+

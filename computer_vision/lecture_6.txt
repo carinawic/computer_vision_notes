@@ -1,0 +1,102 @@
+lecture 6
+
+edge detection general procedure 
+    1. compute gradients (fx, fy) from derivatives 
+    2. find edge points by maximizing gradient magnitudes |(fx,fy)|
+    3. link edge points to edge segments 
+
+hough transform 
+    an algorithm that detects all possible lines spanned by the edge points 
+    we are mapping points to lines and vice versa
+    the line that gets most votes wins 
+        The transform space has two dimensions, and every point in the transform space is used as an accumulator to detect or identify a line described by
+            too coarse (sparse) accumulator space → poor resolution in line directions 
+            too fine → not enough samples in accumulators
+    the line is expressed as xcostheta+ysintheta
+        where theta is the corner angle orthogonally towards the line 
+    how can we improve hough transform?
+        increment with gradient magnitude or some other weighting 
+            makes edges sharper before detecting them 
+            reduces critical dependency on thresholds 
+        use information about gradient direction from edge detection 
+            we do edge detection first, and then we use this in hough transform 
+            increment only for those r values that seem resonable, maybe only those who are already on the edge from the edge detection 
+        increment accumulator not only point wise but also with some windowing function (Gaussian like)
+            take into account the neighbor pixels when voting 
+            equivalent to smoothing after voting is done ← more efficient 
+
+RANSAC 
+    RAndom SAmpling Consensus 
+    we use this to find shapes (or lines)
+    we use RANSAC as an alternative to Hough transform when hough transform becoums tricky for non-line shapes 
+        Hough transforms for circle → requires 3 unknown parameters → 3D hough space is tricky 
+            Ellipse → 5 unknown parameters → 5D hough space is super duper tricky basically impossible
+    the algorithm for RANSAC 
+        1. randomly pick a set of points 
+            (line=2,circle=3,ellipse=5)
+        2. compute a model (e.g. y=kx+L) from the points 
+        3. count the number of points 'close enough' to the model within a threshold epsilon
+        4. repeat 1-3 for a number of S interation 
+        5. pick the solution with the highest number of matching points in 3
+    how many trials are required? 
+        the number of required trials is S=log(1-P)/log(1-p^k)
+            where 
+            example: we want to find a line
+                a line has 2 samples so K=2
+                we set p = 10%, we want 10% of points to belong to the shape 
+                we set P=99%, we want to achieve this with 99% probability 
+                → S=460
+                TODO: watch an example youtube video on this 
+
+homography
+    A Homography is a transformation ( a 3×3 matrix ) that maps the points in one image to the corresponding points in the other image
+        aka this formal nonsense: "In projective geometry, a homography is an isomorphism of projective spaces, induced by an isomorphism of the vector spaces from which the projective spaces derive."
+    we create a mapping between 2 planes as seen by 2 different cameras, detect point features, match the features, and use RANSAC to find homography and mismatches (outliers)
+
+
+Stereo matching
+    Stereo matching is one of the most popular techniques to estimate dense depth maps by finding the disparity between matching pixels on two images 
+        we have 2 cameras next to each other, and we want to know 3d info about how far away a point is 
+        for this we need a shape descriptor (number or so) from which we can recognize the shape  
+descriptors 
+    a way to describe the shape 
+    we often want it to be translation invariant, scale invariant, rotation invariant (unless 6/9), reflection invariant (unless 2/5)
+    example of parameters we can use to describe a region   
+        size, bounding box, center of gravity
+        compactness = area/circumference²
+        eccentricity (originalitet) = (length of maximum chord A)/(length of maximum chord B orthogonal to A)
+    Moment descriptors
+        moment means weighted average!
+        we want to calculate the weighted average (moment) of the image pixels' intensities
+        calculation on page 25 
+        we can calculate moments, centered moments (with center of gravity)
+
+dimensionality reduction (embedding)
+    sometimes we need to lower dimensionality, but we want to preserve similarity/distance relationships between instances 
+    techniques for this are:
+        linear
+            principal component analysis (PCA)
+                1. find a basis in a lower dimensional sub-space 
+                2. approximate each vector on that lower dim space 
+                calculations for this using eigenvectors on page 34-37
+        non-linear
+            independent component analysis 
+            self-organizing maps 
+            Gaussian process latent variable models 
+            deep auto-encoders 
+                parts of Autoencoder for image representation learning
+                    Encoder: Gradually reduce number of neurons to a small latent space
+                    Decoder: Gradually increase size to that of original image
+                    Train network by using the input image as the target output
+                    Use the bottleneck neurons as a low-dimensional image representation
+                problem
+                    Problems with a regular autoencoder: We have no control over the shape of the latent space, which might look very strange.
+            Variational autoencoder
+                the encoder is different, we devide it into the mean and std.dev. known as a probabilistic encoder 
+                idea: we model each input point as a gaussian distribution in latent space 
+                this fixes the problem with the lack of control over the shape of the latent space 
+                    latent space visualization
+                        move around in latent space and only use the decoder of a variational autoencoder (forces latent data to be of a given distribution)
+
+
+

@@ -1,0 +1,106 @@
+lecture 3
+
+ℒ
+    in computer vision we use linear operators that we stole from the field "linear system theory"
+    we use the linear operator ℒ (fancy L) 
+    we can apply a function ℒ(f) on the 2d image f 
+        f' = ℒ(f)
+    ℒ satisfies homoeneity and additivity 
+
+shift invariance 
+    ℒ is shift-invariant iff a shift (translation) of the input causes the same shift of the output
+    aka. "ℒ commutes with a shift operator S"
+    aka. ℒ(S(f)) = S(ℒ(f))
+
+linear filtering in image processing
+    used for 
+        integrate information over larger regions (filter)
+        blur image to get rid of noise
+        detect changes (edge detection)
+
+    we want to estimate the output image by modifying pixels in the inout image 
+    kernel
+        the neighborhood and the corresponding linear weights per pixel is called a convolution kernel 
+
+convolution
+    what is it?
+        "magnets - how do they work?"
+        a tool to build linear shift invariant (LSI) filters
+        mathematically, the integral sum as one function curve slides over the other 
+        TODO: memorize the formula to calculate this before the exam
+            calculate the convolution example on slide 13 and 14
+        g*f = g convolved with f
+            g is the convolution kernel and it is represented as a matrix
+            convolution kernel has many names 
+                impulse response
+                point spread function
+                filter kernel 
+                filter mask
+                template
+    continous case 
+        ℒ(f(x)) = integral g(a)f(x-a)da
+    discrete case 
+        ℒ(f(x)) = sum g(s)f(x-a)
+
+convolution vs correlation 
+    conv2 (convolve2d)
+        use it when you want to stick as close as possible to the theory and exploit known mathematical properties of convolutions
+    filter2 (correlate2d) 
+        use it when you want to match a known shape to the image data to see where in the image you have the best correlation 
+        note: does not flip the kernel before applying it
+
+Fourier transform 
+    is a function that calculates the frequency, amplitude and phase of each sine wave needed to make up a given signal 
+    it converts a signal (image) between its spatial and frequency domain representations 
+    todo: learn to read the result of fourier transofrm 
+        formulas on slide 22
+    what does the function do?
+        input: signal
+        output: representing the image in the frequency space 
+    spatial frequency
+        the rate at which the pixel intensity changes 
+    
+    formulas  
+        magnitude = |fhat| = sqrt(Re^2 + Im^)
+        phase = phi = tan-1(Im/Re)
+        frequency = omega = (2πu)/M 
+            omega is [0, 2pi)
+        power = magnutude^2
+    information 
+        magnitude has information about the intensities 
+        phase has information about the edges 
+
+    what is Fourier transofrm good for?
+        it's really nice to do convolution in fourier transform
+        "sinusoids and cosinusoids are eigenfunctions of convolutions"
+        this we know what the filter does to the different frequencies of the image 
+
+    filtering techniques using fourier transform 
+        remove noise 
+            decrease high frequencies 
+        smooth 
+            decrease high frequencies, increase low frequencies 
+        enhance edges 
+            increase medium frequencies 
+
+    spatial vs frequency domain 
+        list of pros and cons on page 37
+
+important math theorems 
+    every shift invariant linear operator can be written as a convolution 
+        ℒ(f)=g*f
+    convolution is the spatial domain is the same as multiplication in the Fourier (frequency) domain    
+        F(h*f) = F(h)F(f)
+            we can either 
+                (left side) convolve in spatial domain, then take the fourier transofrm
+                (right side) express both signals in fourier form and then just multiply them
+
+speeding up convolutional neural networks CNN 
+    we use convolution in CNN 
+    we can speed up the CNN by using fourier transform! so that the complexity becomes smaller 
+    the speedup that we gain by using fourier transform is increasing with the filter size m
+        m = 3 → speedup = x1
+        m = 5 → speedup = x2
+        m = 7 → speedup = x5
+
+    

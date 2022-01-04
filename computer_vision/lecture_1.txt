@@ -1,0 +1,106 @@
+lecture 1
+
+definitions
+    brain facts
+        50% of the cerebral corex is for vision
+        dorsal pathway - where
+        ventral pathway - what 
+
+    neural network basics
+        FCN - Fully-connected Neural Network 
+        CNN - Convolutional Neural Network
+            apply multiple small local filters
+            pooling
+                gradually reduce size by maximizing (averaging) in small local windows
+
+    image processing
+        enhance important features and supress disturbances (noise)
+        Sampling, Filter, Enhancement
+
+    image analysis
+        generate a useful compact description of the image
+        match representations of objects to image data 
+        image and shape representation, feature detection, feature matching, object and image segmentation
+
+    computer vision
+        achieve an understanding of the workd, possibly under active control of the image acquisition process 
+        recognition and classification, stereo geometry, motion and optical flow 
+        the whole field is often called computer vision (including image analysis)
+
+from 2d to 3d
+a discontinuity in the image (and edge) may correspond to a discontinuity in
+    vieweing distance
+    surface orientation
+    illumination changes
+    surface texture
+
+formulas about how we perceive things
+    projective size = object size + viewing distance
+        but we tend to invert the problem and directly see the object size 
+        we perceive that an object in the background is big even if it's smaller than the forground image in pixels
+
+    image color = object color + illumination 
+        but we tend to invert the problem and directly see object color 
+        we perceive that the object (chessboard square) is white even if it's darkened by shadow
+
+how the light bounces and cameras work 
+
+image formation
+    physical proceess that captures scene illumination through a lens system and relates the measured energy to a signal
+    light source -> surface -> the light beam is vignetting(?) through a lens -> CCD -> (radiometric response function) -> image 
+
+definitions
+    irradiance E 
+        amount of light falling on a surface,
+        "how much light is hitting this point?"
+        power per unit area (watts per square meter)
+    radiance L
+        amount of light radiated from a surface 
+        "how much light is bouncing off this pixel towards an angle"
+        power per unit area per unit solid angle
+        aka. brightness 
+    image irradiance E is proportional to scene radiance 
+
+    intensity = image irradience E x area x exposure time 
+        sensors read the light intensity that may be filtered through color filters 
+    discretized image
+        sampled on a discrete 2d grid -> array of color values 
+
+light source examples
+    when the light comes from behind, the object looks brighter (more radiance)
+
+image acquisition 
+    going from world point to pixel 
+    how does the camera work? 
+        world points are projected onto a camera sensor chip 
+        camera sensors sample the irradience to compute energy values 
+        positions in camera coordinates (mm) are convertade to image coordinates (pixels) based on intrinsic(?) parameters of the camera:
+            size of each sensor element
+            aspect ratio of the sensor xsize/ysize
+            number of sensors in total 
+            image center of sensor chip relative to the lens system 
+        
+sampling
+    breaking down the image into pieces
+    sampling rate = resolution
+    sampling due to limitad spacial resolution
+        if the sampling rate is high enough, the original image can in theory be perfectly reconstructed
+
+quantization
+    assigning integer values to pixels (sampling an amplitude of a function)
+    quantization error
+        difference between real value and assigned value
+    saturation
+        when the physical value moves outside the allocated range, then it is represented by the end of range value 
+
+grey levels
+    examples
+        monochrome (1-bit)
+            black and white 
+        2-bit
+            black, white, dark grey, light grey 
+    quantization due to limited intensity resolution 
+    how many shades of grey do we need for a greyscale image? 
+        6-bit (64 gray-levels aka shades) is enought to make an image visually pleasing 
+        64 shades of gray
+

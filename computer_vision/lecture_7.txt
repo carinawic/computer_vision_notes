@@ -1,0 +1,78 @@
+lecture 7
+
+feature detection 
+    receptive fields
+    scale-space
+    edge detection 
+
+
+scale-space theory 
+    inspired by early receptive fields in biological vision 
+    formally: Scale-space theory is a theory that provides a way to determine canonical models for visual receptive fields, and also ways of determining and handling their transformation properties under natural image transformations.
+    covariant receptive fields 
+        out basic requirement is that the family of receptive fields are covariant under image transformations 
+        we must therefore take into account these non-linear image transformations that inevitable occcur in a natural environment:
+            scaling transformations caused by objects of different size and at different distances to the observe
+            affine transformations modelling image deformations caused by variations in the viewing direction
+    multi-scale representation 
+        at high(?) scale image, we care about all little deatails, whereas at low scale images, we care about only the big shapes 
+        example in cartography: building ⇒ city ⇒ county ⇒ country ⇒ world
+        initially we don't know which scales are appropriate in the image (big objects containing smaller objects)
+            the idea is that we start with representing all scales simultaneously first, then we expand the data set over additional domensions using the scale of the receptive fields 
+                we start with the original image, then we progress towards coarser levels of scale (increasing variable t)
+        formal requirements for this scale-space representation on page 18-21, summary on page 22
+
+
+
+affine gaussian receptive fields 
+    we relax rotational symmetry to mirror symmetry 
+
+biological receptive fields in LGN and V1 
+    LGN neurons = (-(+)-) 
+    SIMPLE V1 neurons = ++|--
+
+
+gaussian derivatives (using gaussian derivative kernels)
+    these are useful things that we can use as a "general basis" for all sorts of cool image iperations, such as feature detection, feature classifications, surface shape, image matching, image-based recognition
+    when we apply these gaussian derivative operations on an image, we see the edges in a certain direction. For example, applying Lx gives us all horisontal edges, Ly gives us vertical edges, then we combine theses as Lxx, Lxy, Lyy, etc. as in the lab
+    important: gaussian derivatives are based on some type of gaussian kernel 
+        if it's based on rotationally symmetric gaussian kernel, or affine gaussian kernel
+            are good basis for expressing visual operations 
+            those gaussian derivatives can be computed at ANY SCALE and up to ANY ORDER N
+                this is called multi-scale N-jet representation 
+    combining gaussian derivatives (Lxy)
+        we want to combine them into s.k. "differential invariants" so they are invariant to e.g. rotations 
+        this is used in 
+            edge detection 
+            interest point detection (aka. blob detection and corner detection)
+
+
+edge detection 
+    different methods for edge detection 
+        linear 
+            high-pass filtering
+            matching with model patterns
+            differentiation (derivatives)
+                a fundamental problem with edge detection using differentiation 
+                    an arbitrary small perturbation in the input can lead to arbitrarily large perturbation in the output
+                        aka. "small error in input leads to big error in output"
+                    therefore we do smoothing 
+        non-linear 
+            fitting on parameterized edge models 
+            non-linear diffusion 
+
+laplacian "edge detection"
+    for 1d signals, edges corresponds to 
+        peaks in the first-order derivative 
+        zero-crossings in the second order derivative
+    for 2d signals 
+        the laplacian operator upside-down-triangle²L = Lxx+Lyy 
+            rotationally symmetric
+            works same as second-order derivative method for one-dimensional straight lines 
+            we can use the zero-crossings of the laplacian in order to detect edges already year 1980
+    problems with the laplacian edge detection 
+        zero-crossings of laplacian also gives false edges 
+        poor localization for curved edges, only good at finding straight lines 
+        it is complete shit in general compared to other methods 
+        
+    
