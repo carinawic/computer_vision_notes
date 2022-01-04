@@ -1,11 +1,5 @@
 lecture 7
 
-feature detection 
-    receptive fields
-    scale-space
-    edge detection 
-
-
 scale-space theory 
     inspired by early receptive fields in biological vision 
     formally: Scale-space theory is a theory that provides a way to determine canonical models for visual receptive fields, and also ways of determining and handling their transformation properties under natural image transformations.
@@ -22,15 +16,12 @@ scale-space theory
                 we start with the original image, then we progress towards coarser levels of scale (increasing variable t)
         formal requirements for this scale-space representation on page 18-21, summary on page 22
 
-
-
 affine gaussian receptive fields 
     we relax rotational symmetry to mirror symmetry 
 
 biological receptive fields in LGN and V1 
     LGN neurons = (-(+)-) 
     SIMPLE V1 neurons = ++|--
-
 
 gaussian derivatives (using gaussian derivative kernels)
     these are useful things that we can use as a "general basis" for all sorts of cool image iperations, such as feature detection, feature classifications, surface shape, image matching, image-based recognition
@@ -46,6 +37,7 @@ gaussian derivatives (using gaussian derivative kernels)
             edge detection 
             interest point detection (aka. blob detection and corner detection)
 
+~ everything below here is about edge detection ~
 
 edge detection 
     different methods for edge detection 
@@ -60,7 +52,7 @@ edge detection
         non-linear 
             fitting on parameterized edge models 
             non-linear diffusion 
-
+                todo: "Show that convolution with the 2-D Gaussian kernel satisfies the 2-D diffusion equation"
 laplacian "edge detection"
     for 1d signals, edges corresponds to 
         peaks in the first-order derivative 
@@ -74,5 +66,69 @@ laplacian "edge detection"
         zero-crossings of laplacian also gives false edges 
         poor localization for curved edges, only good at finding straight lines 
         it is complete shit in general compared to other methods 
-        
+
+gradient based edge detection 
+    better alternative than the laplacian method 
+    how does it work 
+        1. we have a gradient vector upside-down-triangle L = (Lx,Ly) = (dL/dx, dL/dy)
+        2. we then measure edge strength by gradient magnitude |upside-down-triangle L| = sqrt(L²x,L²y)
+        3. we then convolve the image by appropriate kernel prior to derivative computations 
+    the result is an image with only edges of different strengths
+    derivative stuff
+        we need an expression for Lx, which is the same as the derivative formula Lx=(L(x+h,y)-L(x-h,y))/2h = this specific filter mask (0,0,0;-1/2,0,1/2;0,0,0)
+            and same but Transpose for Ly 
+        using Lx and Ly, we can get the gradient direction 
+            theta = arctan(Lx/Ly)+nπ = atac2(Lx,Ly)
+        we can also approximate the derivatives using Taylor expansions
+
+
+edge linking 
+    sometimes we want to link neighbouring edge pixels to connected contours
+        each point has strength |gradient L| and orientation theta 
+        algorithm for edge linking:
+            connect those within a threshold 
+            algorithm described on page 61
+    Hysteresis thresholding
+        it's a smart way of thresholding where we threshold in two phases,
+        how it works
+            first phase: we only keep edge points of edge strength >Tlow
+            second phase: then from this image, we only keep edge points of edge strength >Thigh
+            then we sort these edges the following way:
+                if all edge elements are below Thigh, we suppress that edge 
+                if at least one edge element is above the higer threshold, we keep that edge 
+                    "while allowing edge segments for which at least one edge element is above the higher threshold to extend into regions where the edge elements that are just above the lower threshold"
+        it's good because it supresses the small unneccessary details and only keeps important edges 
+
+Canny edge detection vs Differential edge detection 
+    Canny edge detection (1986)
+        usually, if we use threshold for edge detection, we get a very wide edge while really we want a thin edge 
+        the solution here is 
+            1. we convolve the image by smoothing kernel (we smooth the image)
+            2. we estimate the strength and edge normal direction 
+            3. along the normal direction of the edge, we find the local extrema which is the maximum value of that edge 
+                to find this local extrema, we use something called non-maximum suppression (implemented by local search)
+                    non-maximum suppression works like this 
+                        we have 3 points and measure the value differences from q: r ← q → p 
+                            if the value at q is larger than both p and r, interpolate to get these values 
+            hence we get the one point of the edge which is in the middle 
+        Canny derived an optimal smoothing kernel for handling trade-off issues in edge detection and then demonstrated that this kernel can be well approximated by a Gaussian kernel
+
+    Differential edge detection (Lindeberg 1993)
+        we use non-maximum suppression just like Canny, but we express this using derivatives
+        the edges are given by: Lvv = Lx²Lxx + 2LxLyLxy + Ly²Lyy = 0 or Lvvv = L³xLxxx + 3Lx²LyLxxy + 3LxLy²Lxyy + Ly³Lyyy < 0
+        this method works really well 
     
+    Todo: Differences between the two: ?
+
+sub-pixel interpolation of zero-crossings 
+    1. derive the image in adjacent cells of 2x2 pixels
+    2. if adjacent pixels within one cell has opposite signs of Lvv, we interpolate a zero-crossing between them by linear interpolation (interpolation = we use known values to figure out the in-between values)
+    3. we connect the zero-crossings by straight lines 
+    4. we link all these straight lines into continous curves 
+    3. Perform complementary check on the sign of Lvvv
+    example: | +   - | => | + 0 - | =>  add a line between the zeros 
+             |       |    | 0     |    
+             | -   - |    | -   - |
+
+
+
