@@ -1,0 +1,102 @@
+lecture 9
+
+segmentation 
+    problem: usually ambiguous 
+        is it B or 13?
+    Gestalt theory 
+        humans do segmentation according to a set of rules 
+            proximity
+            similarity
+            continuity 
+            closure
+            common region
+            connectedness
+    techniques 
+        Figure-ground segmentation: divide in foreground and background regions 
+            thresholding
+            level-set methods
+            energy minimization with graphs
+                basically magic 
+            instance segmentation with CNNs 
+        image segmentation: divide image in regions with pixels of similar qualities
+            k-means clustering
+            watershredding
+                what is this 
+            mean-shift segmentation
+            normalized cuts 
+            semantic segmentation
+        histogram based segmentation 
+            threshold the grey-level values to create a binary image 
+            how to automatically find a good threshold?
+            automatic thresholding
+                P-tile method 
+                    use a priori knowledge about the size of the object: assume an object with size P as fraction of the whole 
+                    choose a threshold such that P% of the overall histogram is determined 
+                mode method 
+                    find the peaks and valleys of the histogam 
+                    set threshold to the pixel value of the valley 
+                    non-trivial to find peaks/valleys 
+                        ignore small peaks 
+                iterative thresholding 
+                    1. start with an approximate threshold
+                    2. iteratively, calculate the goodness T=(r1+r2)/2 where ri is the mean gray value of the previous segmented region i 
+                    3. make new approximation of threshold 
+                adaptive thresholding 
+                    in case of uneven illumination, gloval threshold has no use 
+                        remember the chessboard with shadow illusion when black and white square have the same actual color 
+                    divide image into mxm subimages and determine a threshold for each subimage 
+                    fit local thresholds to a smooth function 
+                
+gaussian mixture models (GMM) 
+    idea: assume that a pixel has a combination of colors from multiple clusters, instead of just one (as in k-means)
+    we have a probability P that pixel i belongs to cluster k, using gaussians 
+    find the maximum likelihood estimate of model parameters
+        we find this using a method called Expectation-Maximization
+            it has two steps, Expectation and Maximisation 
+                iterate these two until convergence 
+                algorithm on page 18 
+            
+k-means vs GMM 
+    k-means assumes round clusters, GMM allows them to be elliptic 
+
+ 
+mean-shift segmentation
+    takes into account spatial coherence
+    common model for kernel density estimations 
+    groups pixels in terms of colours and positions 
+    the distribution of colour values can be plotted in Luv space 
+        L=luminance, uv=color 
+    idea: we try to find points (in 5D sace) with maximum density 
+        by calculating the gradient 
+            we go towards the center of mass, the mean shift vecotr points towards the center of mass 
+
+merging and splitting 
+    common to oversegment and then merge similar regions 
+        similarity is
+            mean intensity 
+            statistical distributions 
+            weakness of common boundary
+
+watershredding
+    algorithm
+        create some topological map over image domain (using gradient magnitude, distance transform or similar)
+        gradually fill basins (valleys) with water from the deepest point upwards 
+        when two pasins meet, create an edge between two segments 
+        end when all pixels are either filled or edge pixels 
+    usually leads to over-sedmentation
+    this is a good way to create superpixels 
+ 
+graph theoretic clustering 
+    links in the graph represents similarities between the nodes 
+    summarized into a large affinity (similarity) matrix
+    min-cut problem, split the graph into two or more pieces so that the cutted links have as low weights as possible 
+        segmentation found by solving a generalized eigenvalue problem
+    normalized cut 
+        maximize sum of within cluster similarities, while minimizing sum across cluster with similarities 
+        minimize normalized cut Ncut=(a,B)=cut(A,B)/assoc(A,V)+cut(A,B)/assoc(B,V)
+            we divide the cost of the cut with how similar two nodes are well-connected this node is to the rest of the graph 
+                assoc(A,V) = sum of links connected to any verted in A
+            reason is so that little unimportant pepper pieces don't become their own whole segmented part 
+
+
+

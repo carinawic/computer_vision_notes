@@ -1,0 +1,111 @@
+lecture 8
+
+feature detection 
+
+interest point detection 
+    aka corner detection and blob detection 
+
+matching of image patches 
+    when we choose a patch for matching two images, they should not be a generic background solid color, but rather something unique like an edge
+    shifting the window in ANY DIRECTION should yield a large change in appearence 
+
+there are many approaches to interest point detection 
+    here are three common interest point detectors
+        (1) Harris corner detection 
+        (2) Laplacian blob detection with automatic scale selection
+        (3) Determinant of Hessian blob detection with automatic scale selection 
+
+(1)
+corner detection using Harris (this seems to be the worst method of the three)
+    this methods sucks compared to (2) and (3)
+    second-moment matrix 
+        Idea: Accumulate statistics of local directions in regional neighbourhood around every image point
+    the Harris (or Harris-Laplace) operator 
+        we express a Harris operator H using the second-moment matrix and its eigenvalues 
+        we use this to detect local maxima of H 
+        this gives us a bunch of edge-ish points 
+        the formula for the Harris operator
+            eigenvalues 
+                they cannot be too different from each other for the Harris operator to respond 
+            k
+                a higher value of parameter k implies more restrictive corner detector 
+    complete algorithm on page 15 
+
+(2)
+Laplacian blob detection 
+    given a scale-space representation L of an image f obtained by Gaussian smoothing
+        we then compute the Laplacian operator: gradient²L = Lxx + Lyy
+            then we look at the spatial extrema of gradient²L 
+                gradient²L < 0 => "bright blob"
+                gradient²L > 0 => "dark blob"
+
+(3)
+Determinant of Hessian blob detection
+    given a scale-space representation L of an image f obtained by Gaussian smoothing
+        we then compute the determinant of the Hessian matrix: detHL = Lxx Lyy − L²xy
+            then we look at the positive local maxima of the determinant 
+                gradient²L < 0 => "bright blob"
+                gradient²L > 0 => "dark blob"
+
+comparison (2) vs (3):
+    Laplacian operator
+        for the Laplacian operator to give a strong response it is sufficient that there is a strong response in one of the coordinate directions 
+        approximated using SIFT
+            by difference-of-Gaussians
+        problem:
+            we get a strong response when something is happening along one axis
+                we can have false responses near edges 
+    det(Hessian)
+        approximated using SURF
+            by Haar walvets 
+        for the determinant of the Hessian operator to give a strong response it is necessary that there are strong responses in both coordinate directions (both λ1 and λ2)
+            in other words, we can only get results if  λ1/λ2 is close to 1, which happens if the image structures have strong information in two different coordinate directions 
+
+how do you do scale-space extrema detection?
+    TODO: 
+        what is scale-space extrema? why do we need to calculate it?
+        watch a youtube video on scale-space and scale-space extrema
+        algorithm page 39 ← sorta need to know this
+
+automatic scale selection 
+    how does scale selection applied to a Gaussian blob select the scale of the blob?
+        TODO 
+    
+pyramids in computer vision (TODO)
+    how to choose filter coefficients in pyramid scheme
+    pyramid weights related to diffusion equation
+    trade-off issue in hybrid pyramids
+
+
+SIFT 
+    the SIFT descriptor
+        algorithm on page 55
+        watch a youtube video
+    extensions of the SIFT descriptor: RootSIFT 
+        idea: change the metric for comparing SIFT histogram descriptors from Euclidean distance to Hellinger distance 
+        improves performance of SIFT significantly 
+SURF 
+    the SUFT descriptor
+        algorithm at page 60
+        watch a youtube video
+GLOH
+
+
+matching of image descriptors 
+    1. we have two images, we compute sets of interest points from each 
+    2. compare the points by computing the euclidean difference between their image descriptors 
+        for this, we use SIFT or SIRT descriptors that are defined from Gaussian derivatives, instead of pyramid or Haar walvets
+            Gauss-SIFT and Gauss-SURF
+    3. accept best matches between pair of interest points Aj,Bj
+
+
+comparison
+    differences (TODO)
+        SIFT vs SURF (vs GLOH)
+        Gaussian derivatives vs pyramid vs Haar walvets 
+    goodness
+        det(Hessian) method gives better interest point detector than Laplacian
+        SIFT is better image descriptor than SURF 
+            However, SURF can be computed more efficiently 
+            (for memory: surfing is fast, but not very stable)
+        both det(Hessian) and Laplacian are much better interest point detectores than Harris-Laplace 
