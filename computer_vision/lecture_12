@@ -1,0 +1,92 @@
+lecture 12
+
+Stereo Geometry
+    When two cameras view a 3D scene from two distinct positions and you try to figure out depth from this
+    if we can identify the corresponding point, depth can be computed by triangulation
+    The word ”stereo” comes from the Greek word ”stereos” which means firm or solid.
+    words 
+        Vergence 
+            angle 2μ - angle between principal directions.
+                the angle (right-eye - fixation point - left-eye) 
+        Gaze (version) 
+            angle γ - angle between primary direction and the ray from the cyclopean eye to the fixation point.
+                the angle (fixation point - cyclopean eye - cyclopedian eye looking straight forward)
+        baseline (Tx)
+            the distance between the two cameras 
+    math
+        Z = f Tx / d
+            Z = depth 
+            Tx = baseline 
+            d = disparity 
+                Binocular disparity refers to the difference in image location of an object seen by the left and right eyes
+            important equation from page 17, 19
+            note: depth and stereo disparity are inversly proportional
+                if you hold a finger in front of you and alternate opening an eye, the finger shifts much. However, at longer depth, finger shifts less. 
+            note: depth is proportional to the baseline t 
+                if we have bigger distance between our eyes when alternating eyes, the finger shifts more.
+            note: the depth error depends quadratically on the depth 
+                proof on page 22
+                trade-off: wider baselines pros and cons (page 22)
+        epipolar
+            Epipolar plane
+                a plane through a point X and the optical centers (picture on slide 23)
+                    The projection of the optical center o′(o) is called the epipole p(p′).
+                    Note: Any epipolar plane projects to a line that goes through the epipole. Such a line is called an epipolar line.
+            epipolar transform
+                The map from points in one image plane to epipolar lines in the other image plane is called the epipolar transform
+                    q → L'(q)
+        the two important matrixes
+            the essential matrix E
+                Essential matrix E relates image coordinates
+                E = RTt
+                formulas on page 26
+                the epipolar constraint: q'^T Eq = 0
+                    Tt = matrix on page 27
+            the fundamental matrix F
+                Fundamental matrix F relates pixel coordinates
+                F = K'^-T EK^−1
+            usage 
+                Given a point in one image, multiplying by the essential or fundamental matrix will tell us which epipolar line to search along in the second view
+
+
+determining the essential matrix
+    use features (e.g. SIFT) matched between the two images 
+    the essential matrix depends on
+        Rotation R (3 params)
+        Translation t (3 params)
+    the matrix is however homogeneous in components of t
+        => in total, 5 unknowns 
+
+bundle adjustments: multiple cameras
+    if we have K cameras with unknown projections matrixes and such 
+        we can build an equation system, suddenly it is a minimization problem to compute the essential matrices
+        page 31
+    ColMap
+        Feature extraction, matching and bundle adjustment using ColMap
+
+establishing correspondence - problems:
+    occlusions
+        some part of scene are only seen by one camera
+            the right eye cannot see behind the left edge of a box
+    illumination, perspective, texture,  
+
+Stereopsis in biological vision
+    images from right and left eye are merged
+    object in front of- or behind the fixation target (or fixation point) give rise to diplopia (double vision)
+
+Corresponding points
+    the two points on the left-eye and right-eye retina which receive the same world-point 
+
+The cyclopean eye 
+    The cyclopean eye is an imaginary eye situated midway between the two eyes.
+    Used to determine directions of point A and B - point A stimulating temporal retina of right eye and nasal retina of left eye.
+
+disparity map
+    map of how far away structures are (white=close, gray=middle, black=far)
+    if we plot the disparity space (image), the only real values lie on the diagonal
+        because we want to ignore matches that are behind the camera or too close(?)
+        this is explained on page 45
+
+
+
+

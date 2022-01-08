@@ -1,0 +1,133 @@
+lecture 11
+
+object recognition 
+
+recognition
+    is this my cup?
+    classical methods work very well
+classification
+    what is this?
+    deep learning works very well
+detection
+    if there is a cup, where is it?
+    much harder problem
+
+how to do recognition
+    step 1: representation
+        take an image and represent it in some feature space 
+    step 2: classification
+        given a new image in feature space, determine class it belongs to
+
+ml stuff 
+    supervised vs unsupervised
+        supervised 
+            annotated training examples exist
+        unsupervised (clustering)
+            no annotated training examples 
+    generative vs discriminative
+        generative: models how things look like
+            ex. face = 2 eyes + 1 nose + 1 mouth
+        discriminative: models the differenece between things 
+            ex. face vs non-face  
+    invariance
+        appearnce of object might vary, thus matching has to be (more or less) invariant to these 
+    
+representation of obejct (traditional methods)
+    template based (dense)
+        like recognizing something is a face 
+        store some image of objecet
+        relative positioning very important
+        normalized (lightning,scales) for invariance
+    feature based (sparse)
+        store sets of characteristic features (cournsers, contours)
+        relative position flexible
+        only keeps information that can be made invariant 
+    statistic based (usually dense)
+        store historgrams of image data (edges, colours)
+        positions are disregarded (textures)
+        each kind of data matched invariantly
+
+Bag of Words (BoW) 
+    idea: represent images as a histograms of features (often SIFT)
+    google: a document is represented as a histogram of words
+    histogram examples
+        histogram for a face 
+            bikeseat:   -
+            skin:       ----------
+            red:        -
+            eye:        ----
+        histogram for red violin.
+            bikeseat:   --
+            skin:       ----
+            red:        -------------
+            eye:        --
+    algorithm in steps
+        Step 1: Feature extraction (e.g. SIFT) (putting these into feature space)
+        Step 2: Clustering in feature space (e.g. K-means)
+        Step 3: Collect histograms of feature numbers
+        Step 4: Classify histograms into different object classe 
+
+Convolutional Neural Networks (CNN) (repetition)
+    idea: have a very simple structure, but learn EVERYTHING
+    each layer includes four steps 
+        1. convolutions (normal filtering operations)
+        2. non-linear operator (e.g. ReLU)
+        3. pooling (e.g. find local maximum and subsample)
+        last layer is fully connected 
+    
+CNN layers 
+    convolution layer 
+        CNN: convolutional layers
+        Similar to the image filters we have seen before.
+        However, filters are learned from large amounts of data, and
+        kernels are typically in 3D over multiple input channels.
+        Followed by non-linear activation function
+    pooling layers 
+        pooling reduces image sizes by local maximization or averaging 
+        gradually makes result more translationally invariant 
+            because we keep the big shapes but remove things liek shading and noise
+    fully-connected layers 
+        After flattening data, last layers are fully connected.
+        It is where the actual classification is done.
+        Feature learning: Train for classification, but use results just
+        before the fully-connected layers for something else.
+
+history of revolutionary networks within image classification
+    page 25-29
+
+R-CNN
+    selective search for R-CNN (2014)
+        Apply Mean-Shift segmentation at different scales and then hierarchically merge regions to get object candidates.
+    fast R-CNN (2015)
+        Novelty: do convolutions only on the full image.
+        With pooling, apply region proposals directly to feature space.
+        Refine object by a bounding box regressor
+    faster R-CNN (2015)
+        Novelty: replace selective search (mean-shift) with a CNN.
+        First compute feature map, then test different positions and sizes.
+        Each anchor outputs class scores and refined bounding boxes.
+    YOLO – You only look once (2016)
+        Novelty: decouple class score from bounding box prediction.
+        Combine generation and classification in one pass → much faster
+        Uses fewer anchor points, leads to problems with small objects.
+
+how to do classification
+    How to determine which class a feature vector belongs to?
+        Nearest neighbour classification
+        Bayesian classification
+        Linear discriminant functions
+        TODO: compare these three: youtube
+
+Nearest neighbour classification
+    find the nearest neighbor among training data 
+    problem: costly because we have TONS of training data
+    there are some solutions to this on page 41 with pros and cons 
+
+Bayesian classification
+    class assignment and feature vectors are stochastic variables 
+    determine a classification function that minimizes the classification error 
+    it's based on Bayes' formula
+
+lexicon 
+    occlusion
+        partly covering something 

@@ -1,0 +1,93 @@
+lecteure 13
+
+--
+
+notes to self:
+
+occlusion means that there is something you want to see, but can't due to some property of your sensor setup, or some event. 
+
+cross-correlation : acbdefghi
+convolution: ihgfedcba
+
+--
+
+motion and optical flow
+
+how to know motion (mathematicaly)
+    we add together translation (scaled by 1/Z where Z is depth) and rotation, independent of depth 
+    rotation does not depend on depth, because it's impossible to estimate depth without translation 
+    translation and rotation are very similar in x and y axis 
+        but they look different for forwards motion and around optical axis 
+            rotation goes around the middle of the image, translation goes inwards towards the middle 
+        
+what is optical flow 
+    usually optical flow corresponds to motion field 
+        when generally a brightness pattern moves up something moves up 
+        but not always: a sideways striped cylinder rotating will give optical flow upwards (page 12)
+
+optical flow constraint equation 
+    derivative dI/dt=0 (I=intensity, t=time)
+        can be rewritten as (IxIy)*(u,v)=-It
+    this is a constraint on the optical flow 
+
+aperture problem (!)
+    we cannot determine the component of the optical flow along an edge.
+        through a small hole (aperture) we can't see certain motions 
+            if our hole is an edge, then we can't see the motion along the direction of the edge 
+                hence, the best feature is a corner 
+    normal flow = component of flow perpendicular (normal vector) to the line 
+
+local smoothness 
+    Lucas & Kanade (1984)
+        method for handling flow
+            how does it work? (TODO) 
+        the method has a problem: we can only handle very small flow 
+            smaller than the standard deviation of the gaussian blurring filter 
+            solutions:
+                shift windows for matching over time
+                search coarse-to-fine using gaussian pyramids
+                    Create pyramid by successively blurring and subsampling image
+
+    one pixel is not enough because we have 2 unknowns in the optical flow constraint function 
+        homogeneous → 0 eigenvalues → we don't have any point to hang on to for detecting movement
+        texture regions → too high eigenvalues → so many points to latch on to 
+    
+affine motion 
+    idea: we don't assume that motion is constant, instead it satisfies an affine model (equation system on page 21)
+    it becomes a least square minimization problem  with 6 unknown parameters
+
+ML solutions
+    FlowNet
+        optical flow with CNNs 
+        biggest challenge:
+            find sharp boundaries and still get accurate optical flow estimates 
+                hard to get both. If we have accurate flow estimates (movement), we can't also get sharpness
+                    things that move become blurry (dah).
+    MaskFlowNet
+        currently the best 
+        works in 3 steps:
+            First extract multi-scale features data in a feature pyramid.
+            Then estimates optical flow AND occlusion mask at each scale.
+            Propagates flow coarse-to-fine similarly to Lucas & Kanade.
+
+Focus of Expansion
+    TODO: what is this 
+
+What are these things:
+    Motion field
+    Optical flow
+    Second movement matrix (M)
+        aka. Structure tensor
+        in mathematics, the structure tensor, also referred to as the second-moment matrix, is a matrix derived from the gradient of a function. 
+            a matrix derived from the image derivatives (gradient) 
+                its EIGENVALUES tell us something about what we're looking at 
+                λ1>>λ2 or λ2>>λ1 → edge
+                λ1 and λ2 are small → flat region (one color) 
+                λ1 and λ2 are BIG → corner! E increases in all directions (these are distinctive interest points, we want these)
+
+        it's used in the Harris corner detector 
+            1. compute M matric for each image window to get their cornerness scores
+            2. find points that seem like corners 
+            3. Take the points of local maxima, i.e., perform non-maximum suppression
+
+Principal component analysis

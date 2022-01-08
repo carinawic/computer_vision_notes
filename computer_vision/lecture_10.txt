@@ -1,0 +1,106 @@
+lecture 10
+
+segmentation 
+
+snakes - active contour models 
+    idea: represent a shape by a curve 
+    closed contour 
+        X(0)=X(1)
+    find the curve by monomizing some energy 
+        E=Einternal+Eimage
+    internal energy (makes curve as short and stright as possible)
+        Einternal = integral(formula) on page 4
+    image energy (ex. maximize image gradient along curve)
+        Eimage = Eedge = -integral(formula) page 4
+    discretization: divide contour into pieces 
+        E=sum(formula) page 5
+        iterarively, move along normals to gradually decrease energy 
+            we have an edge ----- and we use its normal | along this edge which decreases energy 
+    pros and cons 
+        strengths 
+            Easy to add custom energies to suit problem
+            Very good results on some problems (eg. medical)
+            Can be extended to particular shapes (eg. bodies)
+        weaknesses
+            can easily get stuck on wrong edges (like on the shadow)
+            hard to prevent self-intersection
+            cannot change topology
+
+level set segmentation
+    write the curve a function of time t 
+        X(s,t) = (x(s,t), y(s,t))
+    let the curve move along a normal N with speed given by the curvarutre K
+        dX/dt=KN
+    the effect of minimizing some energy 
+    pros and cons 
+        strengths 
+            easy to add custom functions to suit problem
+            can handle more complex shapes 
+            easily extended to high dimensions 
+            allsows changes in topology
+        weaknesses
+            convergence speed can be slow 
+            can be hard to implement
+    very common in medical imaging 
+
+energy based segmentation 
+    Semantic segmentation with CRF
+        CRF = Conditional Random Field
+        create a CRF with one node per pilex and links between all neighbouring nodes
+        assume you have a set of models 
+            example:
+                L=(foreground, background)
+                L=(sky, ground, vegitation, people, cars, houses)
+        each pixel x has label lx belonging to L, denoting which model it belongs to 
+        idea: set up the problem as an energy (cost) minimization problem
+        find the combination of labels that minimizes the cost 
+        result 
+            result of energy minimization: assign pixels to most similar models, while aligning borders of segments to edges.
+    GrabCut
+        example of energy based segmentation 
+        you draw a stroke on each item with a different color, then the program figures out which blobs you want 
+
+Fully convolutional network (FCN)
+    Fully convolutional network (FCN)
+        Train a network for classification with many different classes
+        Apply it to many different overlapping windows in the image
+        Segment image based on most likely class in each window
+            pointy ears? probably cat 
+        a common method is to use FCN which is a deep neural network for feature learning, but apply CRF at the end anyway
+        FCN applied to multiple windows can be slow
+            SegNet: Segmentation with encoder-decoder network
+                "A Deep Convolutional Encoder-Decoder Architecture for Image Segmentation"
+                encoder-decoder networks are faster
+
+Mask R-CNN: Detection and Segmentation combined
+    Idea: If you know the object, segmentation becomes easier
+    we use R-CNN to find the object and then we attach a FCN for object segmentation 
+
+Mathematical Morphology
+    this is a method to "clean up" segmentations 
+    some segmentations can have holes or are too small 
+    Solution: Apply (non-linear) morphological operations
+    what is it really
+        A morphological operator is defined by a structuring element (or kernel) of size n × n and a set operator.
+        Kernel is shifted over the image 
+        The center pixel is set to a pre-defined value (in the binary case, euther 0 or 1)
+    Dialation
+        we feed the blob so it grows fat 
+        the basic effect of the operator on a binary image is to gradually enlarge the boundaries of regions of foreground pixels 
+        foreground areas grow, holes become smaller 
+    Erosion
+        the exact opposite of dialation 
+        we starve the shape so it becomes thinner
+        erode away the boundaries of regions of foreground pixels 
+    Opening and closing
+        Opening
+            an opening is defined as an erosion followed by a dilation 
+            A ∘ B = (A ⊖ B) ⊕ B 
+            A opening B = (A erosion B) dilation B
+            erosion (starving) first will "open" the holes
+                because two small holes might become a staying big hole
+        Closing
+            A • B = (A ⊕ B) ⊖ B    
+            dilation (fattening) first will "close" the holes
+                because two small holes will dissapear then there's no hole left to expand
+            
