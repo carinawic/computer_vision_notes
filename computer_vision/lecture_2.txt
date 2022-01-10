@@ -1,11 +1,28 @@
 lecture 2
 
+image formation 
+    geometric - given a point in the scene, where it ends up in the image
+    photometric - given the brightness and appearence of a point in the scene, what would the brightness and appearence be in the image 
+
 theory of cameras 
     pinhole camera
+        ideal pinhole size:
+            different sizes 
+                big -> a lot of blur 
+                0.35mm (in this particular example)  -> sharp
+                smaller -> blurry again. Why? effect called diffraction. Any opening, light wave passing through, light wave will bend. The smaller the opening, bigger effect of bending.
+            answer: diameter d = 2*sqrt(f*lambda)
+                f = effective focal length 
+                lambda = wavelength of light 
+        it's great and can produce clear images (at the cost of exposure time) when we have no lense
+            example image: f=73mm, d=0.2mm, exposure time T = 12 seconds (because the pinhole lets very little light through it)
+            however, it simlpy doesn't gather enough light 
+                solution: lenses
+                    problem with lenses: produces distortions 
         aka camera obscura
         the simplest imaging device which captures the geometry of perspective projection
         how does it work
-            rays of light enter the camera through an infinitesimally small aperture(?)
+            rays of light enter the camera through an infinitesimally small aperture
             the intersection of light rays with the image plane form the image of the object
         leonardo davinci (around year 1500) wrote about the pinhole camera that you can display a reversed image through a pinhole 
     
@@ -13,14 +30,27 @@ perspective projection
     mapping from 3d onto 2d 
         "Perspective projection or perspective transformation is a linear projection where three dimensional objects are projected on a picture plane"
         as a result, distant objects appear smaller than nearer objects
+    image magnification 
+        |m| = |f/z0|
+            m = magnification
+            f = effective focal length 
+                distance between pinhole and image plane
+            z0 is depth of the object in the scene 
+        note: m can be assumed to be constant if the range of scene depth delt z is much smaller than the average scene depth z 
+            in other words, if we take a picture from really far away, the magnification is constant 
+        note: area(image) / area(object) = m² 
     we look at the theory of how the (pinhole) camera works
     we find the point on the image plane that corresponds to a particular point in the scene by following the line that passes through the scene point and the center of projection 
         straight line goes like this:
             image point on image plane ← pinhole at the center of projection ← scene point
     definitions
         focal length 
+            the distance between the lens and a pojt F at which parallel lines coming into the lens converges into a point F
             the orthogonal(!) distance between the optical center and the image plane 
                 the orthogonal distance is along the optical axis (z)
+        field of view 
+            As focal length increases, the change of the field of view decreases. As focal length reduces, the change in the field of view increases. Or in other words, there is an inverse exponential relationship between focal length and the change in field of view.
+            The longer the focal length, the narrower the angle of view and the higher the magnification. The shorter the focal length, the wider the angle of view and the lower the magnification.
         coordinate notations 
             image coordinates p=(x,y,f), world coordinates P=(X,Y,Z)
         focal plane
@@ -28,19 +58,27 @@ perspective projection
         focal depth
             the range of distances with acceptable blurring 
 
+    geometry: f:focal length (15mm), i: image distance (60mm), o: object distance (300mm)
+        gaussian lens law
+        1/i + 1/o = 1/f
+            if o→inf then f=i
+
 lenses 
     gather light from a larger opening 
     problem: only light rays from the points of the focal plane intersect the same point on the image plane 
         this leads to blurring in front or behind the focal plane 
     
-    lenses try to solve this problem(?)
+    lenses try to solve this problem, lenses allow to gather much more light 
         smaller aperture → less blur 
-        pinhole → no blur 
+            aperture
+                we express the aperture as a fraction of focal length
+                    Aperture: D = f/N, where N is called the f-Number of lens 
+                    f-Number: N = f/D 
 
     types of lenses
         telescopic lense we flatten the image
             used in movie to give sense of objects being closer, lose sense of depth and distance 
-            if you move further away while zooming in, you increase focal length, and parallel lines in 3d become more parallel in 2d too. We lose sense of perspective. The world appears flat.
+            if you move further away while zooming in, you increase focal length, and parallel lines in 3d become more parallel in 2d too. We lose sense of perspective. The world appears flat. Used in that one movie to make it look like horses were close to eachother on the battlefield.
         fish-eye lens 
             field of view is wide, but results in radial distortion 
                 when straight lines in the world are no longer straight in the image 
@@ -61,6 +99,10 @@ perspective transformation
     rotation - from world coo to camera coo
     translation - from world coo to camera coo
     perspective projection - (from 3d to 2d) from camera coo to image coordinates   (?)
+
+vanishing point 
+    we have parallel lines in 3d 
+    we take one of these parallel lines, moves it so that it goes through the pinhole, wherever the line goes through the image plane lies the vanishing point 
 
 homogeneous coordinates 
     these are special coordinates we use in computer vision 
@@ -98,7 +140,7 @@ camera calibration
 image stitching 
     combining images into larger mosaic (panorama) of higher resolution
 
-image transformations with DoF (NOTE: this is 2D)
+image transformations with Degree of Freedom (DoF) (NOTE: this is 2D)
     translation
         (translation): 2 DoF 
         we move a square in 2d, so x- and y coordinate control 
@@ -143,7 +185,7 @@ distortion
         equation system on page 31 
 
 image warping
-    warping means distorting the image 
+    warping means distorting the image -> we want to skew it or do some affine transformation or something 
     we want to get a new image g(u,v) from our original image f(x,y)
     there are two ways to compute g(u,v) from f(x,y)
         nearest neighbour look-up 

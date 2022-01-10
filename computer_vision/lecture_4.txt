@@ -66,10 +66,7 @@ transfer functions
     
     convolution with a transfer function 
         when we do convolution with a transfer function, we get a "copy" of the kernel h(x,y) to the location of the impulse
-        examples on slide 22 
-
-    transfer function → fourier transform of transfer function 
-    
+        examples on slide 22     
     
     step (rectangle) → sinc 
         rect(x/T) → TsincTu 
@@ -90,12 +87,15 @@ sampling
             Temporal aliasing (not enough temporal resolution).
         Anti-aliasing: sample at higher rate or prefiltering.
             Tools: Fourier transform, convolution and the Sampling Theorem
+            Supersampling: method used to remove aliasing that are jagged and pixelated edges
+                Color samples are taken at several instances inside the pixel (not just at the center as normal), and an average color value is calculated. 
+                    This is achieved by rendering the image at a much higher resolution than the one being displayed, then shrinking it to the desired size, using the extra pixels for calculation. The result is a downsampled image with smoother transitions from one line of pixels to another along the edges of objects.
+
         aliasing or aliasing artifact = the ugly thing in the picture that we don't want 
             if we blur (lowpass) before subsampling, then we have only little aliasing in the end
 
-
 signal processing 
-    sampling theorem 
+    sampling theorem (Nyquist-Shannons)
         how many samples are required to describe the given signal without loss of information? 
             The sampling theorem essentially says that a signal has to be sampled at least with twice the frequency of the original signal. 
                 Since signals and their respective speed can be easier expressed by frequencies, most explanations of artifacts are based on their representation in the frequency domain.
@@ -109,6 +109,7 @@ signal processing
             The minimum sampling rate for band limited function is called Nyquist rate
             With an equal or higher sampling rate, the resulting discrete-time sequence is said to be free of the distortion known as aliasing. 
                 if the signal is undersampled, aliasing occurs
+                The sampling theorem establishes conditions that prevent aliasing so that a continuous-time signal can be uniquely reconstructed from its samples. 
     reconstruction 
         for reconstruction we need to convolve with a sinc function 
             it has "infinite support"

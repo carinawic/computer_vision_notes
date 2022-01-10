@@ -63,6 +63,7 @@ definitions
 
     intensity = image irradience E x area x exposure time 
         sensors read the light intensity that may be filtered through color filters 
+        
     discretized image
         sampled on a discrete 2d grid -> array of color values 
 

@@ -6,12 +6,11 @@ image enhancement
         s=T(r)
             where s and r and intensities after and before
             and T may be piecewise linear, negative, logarithm function 
-        we use histograms that show the amount of certain intensitiy derivatives
+        we use histograms that show the amount of certain intensities
             far to the right = high intensity 
             left = low intensity 
-        redistribute grey-levels
-            increase contrast by increasing medium-sized intensities
-                in the middle of the histogram 
+        redistribute grey-levelsb  
+            increase contrast 
                 we have information loss of high and low frequencies
             histogram equalization 
                 redistribute gray-levels as evenly as possible - correspond to a brighmess distribution where all values are equally probable 
@@ -43,8 +42,17 @@ spatial filtering
                     try values x in h(x) between 0 and pi
                         find where values pass through 
     nonlinear 
-        these also operate on neighborhoods 
-        operations are based directly on pixel values in neighborhood
+        basic 
+            low-pass Gaussian filter formula on page 24
+                binomial kernels
+                    we can use pascals triangle to get a kernel because it approximates a gaussian 
+                        a gaussian does not lead to the same blocky patterns because it is isotropic (in all directions)
+            mean filtering  aka. local spatial averaging
+                we sum the average of the neighborhood
+                problem: errors spread and a salt/pepper pixel can affect a lot of other pixels 
+            
+            isotropic filters 
+                they work indipendent of the direction of the edge, rotating then filtering is same as filtering then rotating 
         types
             median filtering 
                 eliminates local extreme (salt and pepper)
@@ -56,27 +64,15 @@ spatial filtering
                     smooth differently in different directions, usually in order to preserve edges.
                 idea: smooth pixels based on similarity s(x,n) between pixels 
                 problem: impossible to do in frequency domain 
-            Image enhancement with deep autoencoder
-                using network: scale down the image, then scale up the image 
+            autoencoder
+                Network with layers that first reduces the image size (encoder), followed by layers that scale up to original size (decoder)
+                Image enhancement with deep autoencoder
+                    using network: scale down the image, then scale up the image 
             super-resolution with GANs 
                 GAN
                     Generative adversarial networks 
                 common autoencoders that are based on two networks trained in parallel 
-                figuring out if an immage is upscaled or of high resolution 
-filters 
-    local spatial averaging
-        aka mean filtering 
-        we sum the average of the neighborhood
-        problem: errors spread and a salt/pepper pixel can affect a lot of other pixels 
-    low-pass filter with gaussian formula on page 24
-    binomial kernels
-        we can use pascals triangle to get a kernel because it approximates a gaussian 
-            a gaussian does not lead to the same blocky patterns because it is isotropic (in all directions)
-
-    isotropic filters 
-        they work indipendent of the direction of the edge, rotating then filtering is same as filtering then rotating 
-
-     
+                figuring out if an immage is upscaled or of high resolution      
 
 differentiation operators 
     derivatives of images to find edges and stuff
