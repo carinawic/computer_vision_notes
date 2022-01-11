@@ -51,7 +51,7 @@ comparison (2) vs (3):
     Laplacian operator
         for the Laplacian operator to give a strong response it is sufficient that there is a strong response in one of the coordinate directions 
         approximated using SIFT
-            by difference-of-Gaussians
+            by difference-of-Gaussians DoG
         problem:
             we get a strong response when something is happening along one axis
                 we can have false responses near edges 

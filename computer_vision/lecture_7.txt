@@ -12,7 +12,7 @@ scale-space theory
         at high(?) scale image, we care about all little deatails, whereas at low scale images, we care about only the big shapes 
         example in cartography: building ⇒ city ⇒ county ⇒ country ⇒ world
         initially we don't know which scales are appropriate in the image (big objects containing smaller objects)
-            the idea is that we start with representing all scales simultaneously first, then we expand the data set over additional domensions using the scale of the receptive fields 
+            the idea is that we start with representing all scales simultaneously first, then we expand the data set over additional dimensions using the scale of the receptive fields 
                 we start with the original image, then we progress towards coarser levels of scale (increasing variable t)
         formal requirements for this scale-space representation on page 18-21, summary on page 22
 
@@ -53,33 +53,35 @@ edge detection
             fitting on parameterized edge models 
             non-linear diffusion 
                 todo: "Show that convolution with the 2-D Gaussian kernel satisfies the 2-D diffusion equation"
-laplacian "edge detection"
-    for 1d signals, edges corresponds to 
-        peaks in the first-order derivative 
-        zero-crossings in the second order derivative
-    for 2d signals 
-        the laplacian operator upside-down-triangle²L = Lxx+Lyy 
-            rotationally symmetric
-            works same as second-order derivative method for one-dimensional straight lines 
-            we can use the zero-crossings of the laplacian in order to detect edges already year 1980
-    problems with the laplacian edge detection 
-        zero-crossings of laplacian also gives false edges 
-        poor localization for curved edges, only good at finding straight lines 
-        it is complete shit in general compared to other methods 
 
-gradient based edge detection 
-    better alternative than the laplacian method 
-    how does it work 
-        1. we have a gradient vector upside-down-triangle L = (Lx,Ly) = (dL/dx, dL/dy)
-        2. we then measure edge strength by gradient magnitude |upside-down-triangle L| = sqrt(L²x,L²y)
-        3. we then convolve the image by appropriate kernel prior to derivative computations 
-    the result is an image with only edges of different strengths
-    derivative stuff
-        we need an expression for Lx, which is the same as the derivative formula Lx=(L(x+h,y)-L(x-h,y))/2h = this specific filter mask (0,0,0;-1/2,0,1/2;0,0,0)
-            and same but Transpose for Ly 
-        using Lx and Ly, we can get the gradient direction 
-            theta = arctan(Lx/Ly)+nπ = atac2(Lx,Ly)
-        we can also approximate the derivatives using Taylor expansions
+laplacian vs gradient edge detection
+    laplacian "edge detection"
+        for 1d signals, edges corresponds to 
+            peaks in the first-order derivative 
+            zero-crossings in the second order derivative
+        for 2d signals 
+            the laplacian operator upside-down-triangle²L = Lxx+Lyy 
+                rotationally symmetric
+                works same as second-order derivative method for one-dimensional straight lines 
+                we can use the zero-crossings of the laplacian in order to detect edges already year 1980
+        problems with the laplacian edge detection 
+            zero-crossings of laplacian also gives false edges 
+            poor localization for curved edges, only good at finding straight lines 
+            it is complete shit in general compared to other methods 
+
+    gradient based edge detection 
+        better alternative than the laplacian method 
+        how does it work 
+            1. we have a gradient vector upside-down-triangle L = (Lx,Ly) = (dL/dx, dL/dy)
+            2. we then measure edge strength by gradient magnitude |upside-down-triangle L| = sqrt(L²x+L²y)
+            3. we then convolve the image by appropriate kernel prior to derivative computations 
+        the result is an image with only edges of different strengths
+        derivative stuff
+            we need an expression for Lx, which is the same as the derivative formula Lx=(L(x+h,y)-L(x-h,y))/2h = this specific filter mask (0,0,0;-1/2,0,1/2;0,0,0)
+                and same but Transpose for Ly 
+            using Lx and Ly, we can get the gradient direction 
+                theta = arctan(Lx/Ly)+nπ = atac2(Lx,Ly)
+            we can also approximate the derivatives using Taylor expansions
 
 
 edge linking 
@@ -115,11 +117,9 @@ Canny edge detection vs Differential edge detection
 
     Differential edge detection (Lindeberg 1993)
         we use non-maximum suppression just like Canny, but we express this using derivatives
-        the edges are given by: Lvv = Lx²Lxx + 2LxLyLxy + Ly²Lyy = 0 or Lvvv = L³xLxxx + 3Lx²LyLxxy + 3LxLy²Lxyy + Ly³Lyyy < 0
+        the edges are given by: Lvv = Lx²Lxx + 2LxLyLxy + Ly²Lyy = 0 or Lvvv = Lx³Lxxx + 3Lx²LyLxxy + 3LxLy²Lxyy + Ly³Lyyy < 0
         this method works really well 
     
-    Todo: Differences between the two: ?
-
 sub-pixel interpolation of zero-crossings 
     1. derive the image in adjacent cells of 2x2 pixels
     2. if adjacent pixels within one cell has opposite signs of Lvv, we interpolate a zero-crossing between them by linear interpolation (interpolation = we use known values to figure out the in-between values)

@@ -83,7 +83,7 @@ watershredding
         gradually fill basins (valleys) with water from the deepest point upwards 
         when two pasins meet, create an edge between two segments 
         end when all pixels are either filled or edge pixels 
-    usually leads to over-sedmentation
+    usually leads to over-segmentation
     this is a good way to create superpixels 
  
 graph theoretic clustering 
